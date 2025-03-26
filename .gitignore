@@ -1,0 +1,25 @@
+# Ignore virtual environment files
+venv/
+
+# Ignore Flask cache and log files
+.cache/
+.log/
+
+# Ignore temporary files
+*.py[cod]
+
+# Ignore IDE metadata files
+.pydevproject
+
+# Ignore .idea directory (for PyCharm)
+.idea/
+
+# Ignore __pycache__ directories
+__pycache__/
+
+# Ignore .env file (store sensitive variables in a secure way)
+.env
+
+# Ignore Flask blueprint and routes files
+app/blueprints/
+app/routes/
