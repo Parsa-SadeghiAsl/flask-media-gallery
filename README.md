@@ -22,9 +22,9 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. Create a `data` folder in the project root and add your media files:
+3. Create a `media` folder in the project root and add your media files:
 ```bash
-mkdir data
+mkdir media
 # Copy your media files into the Data folder
 ```
 
@@ -37,7 +37,7 @@ python app.py
 
 ## Usage
 
-1. Place your media files in the `data` folder
+1. Place your media files in the `media` folder
 2. View your media files in the grid layout
 3. Download files by clicking the "Download" button on any media item
 

@@ -2,7 +2,7 @@ from flask import Flask, render_template, send_file, url_for
 import os
 
 app = Flask(__name__)
-app.config['DATA_FOLDER'] = 'data'
+app.config['DATA_FOLDER'] = 'media'
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mov'}
