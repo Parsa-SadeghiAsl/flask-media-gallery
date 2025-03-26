@@ -25,7 +25,7 @@ pip install -r requirements.txt
 3. Create a `media` folder in the project root and add your media files:
 ```bash
 mkdir media
-# Copy your media files into the Data folder
+# Copy your media files into the media folder
 ```
 
 4. Run the application:
@@ -43,7 +43,7 @@ python app.py
 
 ## Directory Structure
 
-- `data/` - Directory containing your media files
+- `media/` - Directory containing your media files
 - `templates/` - Contains the HTML templates
 
 ## Supported File Types
