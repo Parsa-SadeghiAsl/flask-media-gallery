@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Flask Media Gallery
 
 A simple web gallery application that displays and allows downloading of media files from a local directory.
