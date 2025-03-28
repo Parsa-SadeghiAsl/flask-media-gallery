@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_file, url_for
+from flask import Flask, render_template, send_file, url_for, request
 from flask_caching import Cache
 import os
 
@@ -6,6 +6,7 @@ app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 cache.init_app(app) 
 app.config['DATA_FOLDER'] = 'media'
+app.config['ITEMS_PER_PAGE'] = 9  # Number of items per page
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mov'}
@@ -15,7 +16,9 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    files = []
+    page = request.args.get('page', 1, type=int)
+    per_page = app.config['ITEMS_PER_PAGE']
+    
     files = cache.get('files')
     if not files:
         if os.path.exists(app.config['DATA_FOLDER']):
@@ -35,7 +38,20 @@ def index():
         files = sorted(all_files, key=lambda x: (x['type'] == 'video', x['name']))
         cache.set('files', files)
     
-    return render_template('index.html', files=files)
+    # Calculate pagination
+    total_items = len(files)
+    total_pages = (total_items + per_page - 1) // per_page
+    start_idx = (page - 1) * per_page
+    end_idx = min(start_idx + per_page, total_items)
+    
+    # Get items for current page
+    paginated_files = files[start_idx:end_idx]
+    
+    return render_template('index.html', 
+                         files=paginated_files,
+                         current_page=page,
+                         total_pages=total_pages,
+                         total_items=total_items)
 
 @app.route('/data/<filename>')
 def download_file(filename):
