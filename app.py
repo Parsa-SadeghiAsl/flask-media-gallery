@@ -34,8 +34,8 @@ def index():
                         'download_path': url_for('download_file', filename=filename)
                     })
         
-        # Sort files: images first, then videos
-        files = sorted(all_files, key=lambda x: (x['type'] == 'video', x['name']))
+            # Sort files: images first, then videos
+            files = sorted(all_files, key=lambda x: (x['type'] == 'video', x['name']))
         cache.set('files', files)
     
     # Calculate pagination
