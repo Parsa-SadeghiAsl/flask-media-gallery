@@ -8,7 +8,7 @@ app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 cache.init_app(app) 
 app.config['DATA_FOLDER'] = os.getenv('DATA_FOLDER')
-print(f"Data folder: {os.getenv('DATA_FOLDER')}")
+print(f"Data folder: {app.config['DATA_FOLDER']}")
 app.config['ITEMS_PER_PAGE'] = 9  # Number of items per page
 
 # Allowed file extensions
@@ -40,7 +40,7 @@ def index():
             return "Data folder not found", 404
         
             # Sort files: images first, then videos
-            files = sorted(all_files, key=lambda x: (x['type'] == 'video', x['name']))
+        files = sorted(all_files, key=lambda x: (x['type'] == 'video', x['name']))
         cache.set('files', files)
     
     # Calculate pagination
