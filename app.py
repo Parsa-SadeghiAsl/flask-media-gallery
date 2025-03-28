@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 cache.init_app(app) 
-app.config['DATA_FOLDER'] = 'media'
+app.config['DATA_FOLDER'] = os.getenv('DATA_FOLDER')
 app.config['ITEMS_PER_PAGE'] = 9  # Number of items per page
 
 # Allowed file extensions
