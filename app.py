@@ -1,11 +1,14 @@
 from flask import Flask, render_template, send_file, url_for, request
 from flask_caching import Cache
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 cache.init_app(app) 
 app.config['DATA_FOLDER'] = os.getenv('DATA_FOLDER')
+print(f"Data folder: {os.getenv('DATA_FOLDER')}")
 app.config['ITEMS_PER_PAGE'] = 9  # Number of items per page
 
 # Allowed file extensions
@@ -33,6 +36,8 @@ def index():
                         'path': url_for('serve_file', filename=filename),
                         'download_path': url_for('download_file', filename=filename)
                     })
+        else:
+            return "Data folder not found", 404
         
             # Sort files: images first, then videos
             files = sorted(all_files, key=lambda x: (x['type'] == 'video', x['name']))
