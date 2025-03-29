@@ -1,5 +1,5 @@
 {
-    "disk": [
+    "disks": [
         {
             "name": "data",
             "mountTo": "data"
