@@ -38,6 +38,7 @@ pip install -r requirements.txt
 4. Create a `.env` file in the project root with the following configuration:
 ```
 SECRET_KEY=your-secure-secret-key
+DATA_FOLDER=media
 DATABASE_URL=sqlite:///media_gallery.db
 
 # Admin credentials (used when creating the initial admin account)
@@ -46,12 +47,17 @@ ADMIN_PASSWORD=your-secure-password
 ADMIN_EMAIL=admin@yourdomain.com
 ```
 
-5. Run the application:
+5. Create a `media` folder in the project root:
+```bash
+mkdir media
+```
+
+6. Run the application:
 ```bash
 python app.py
 ```
 
-6. Open your web browser and navigate to `http://localhost:5000`
+7. Open your web browser and navigate to `http://localhost:5000`
 
 ### First Login
 
