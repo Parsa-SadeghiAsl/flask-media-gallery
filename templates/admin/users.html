@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>User Management</h1>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    {% if users %}
+    <div class="card">
+        <div class="card-header bg-light">
+            <div class="row">
+                <div class="col-md-4">Username</div>
+                <div class="col-md-4">Email</div>
+                <div class="col-md-2">Role</div>
+                <div class="col-md-2">Actions</div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for user in users %}
+                <div class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <strong>{{ user.username }}</strong>
+                            <small class="text-muted d-block">Joined: {{ user.created_at.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            {{ user.email }}
+                        </div>
+                        <div class="col-md-2">
+                            {% if user.is_admin %}
+                            <span class="badge bg-danger">Admin</span>
+                            {% else %}
+                            <span class="badge bg-secondary">User</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    {% if not user.is_admin or current_user.id != user.id %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_toggle_role', user_id=user.id) }}">
+                                            {% if user.is_admin %}
+                                            <i class="bi bi-person"></i> Make User
+                                            {% else %}
+                                            <i class="bi bi-person-check"></i> Make Admin
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% if current_user.id != user.id %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_user_media', user_id=user.id) }}">
+                                            <i class="bi bi-images"></i> View Media
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" 
+                                           onclick="confirmDelete('{{ url_for('admin_delete_user', user_id=user.id) }}')">
+                                            <i class="bi bi-trash"></i> Delete User
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin_users', page=pagination.prev_num) }}">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_users', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin_users', page=pagination.next_num) }}">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="alert alert-info">No users found.</div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this user? This action cannot be undone and will also delete all their media files.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(deleteUrl) {
+    document.getElementById('confirmDeleteBtn').href = deleteUrl;
+    var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %} 

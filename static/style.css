@@ -95,3 +95,48 @@ body {
     border-color: var(--primary-color, #0d6efd);
     color: white;
 }
+
+/* Admin styles */
+.admin-media-preview {
+    height: 200px;
+    object-fit: cover;
+}
+
+.video-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.video-container video {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+.dropdown-item {
+    color: var(--text-color);
+}
+
+.dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-divider {
+    border-top-color: var(--card-border);
+}
+
+.form-control, .form-select {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--card-border);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}

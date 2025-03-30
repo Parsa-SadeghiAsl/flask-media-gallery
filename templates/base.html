@@ -21,6 +21,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('upload') }}">Upload</a>
                     </li>
+                    {% if current_user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_users') }}">Manage Users</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_media') }}">Manage Media</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_profile') }}">Admin Profile</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
                     {% endif %}
                 </ul>
                 <div class="d-flex align-items-center">

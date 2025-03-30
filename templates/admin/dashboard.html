@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">User Management</h5>
+                    <p class="card-text">Manage users, change roles, and remove accounts.</p>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-primary">
+                        <i class="bi bi-people"></i> Manage Users
+                    </a>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Total Users: {{ user_count }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Media Management</h5>
+                    <p class="card-text">Review, edit and delete media files across the platform.</p>
+                    <a href="{{ url_for('admin_media') }}" class="btn btn-primary">
+                        <i class="bi bi-images"></i> Manage Media
+                    </a>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Total Media Files: {{ media_count }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    System Statistics
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <h5>{{ image_count }}</h5>
+                            <p>Images</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h5>{{ video_count }}</h5>
+                            <p>Videos</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h5>{{ new_users_count }}</h5>
+                            <p>New Users (Last 7 Days)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
