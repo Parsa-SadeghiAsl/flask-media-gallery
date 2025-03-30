@@ -4,112 +4,82 @@
 <div class="container py-5">
     <h1 class="text-center mb-5">Media Gallery</h1>
     
-    {% if show_auth_message %}
-    <div class="text-center">
-        <h2>Welcome to Media Gallery</h2>
-        <p class="lead">Please <a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a> to view and upload your media files.</p>
-    </div>
-    {% else %}
-        {% if files %}
-            {% set images = files|selectattr('type', 'equalto', 'image')|list %}
-            {% set videos = files|selectattr('type', 'equalto', 'video')|list %}
-
-            {% if images %}
-            <h2 class="section-header">
-                <i class="bi bi-images"></i> Images
-            </h2>
-            <div class="row">
-                {% for file in images %}
-                <div class="col-md-4 gallery-item">
-                    <div class="card">
+    {% if files %}
+        <div class="row">
+            {% for file in files %}
+            <div class="col-md-4 gallery-item">
+                <div class="card">
+                    {% if file.type == 'image' %}
                         <img src="{{ file.path }}" alt="{{ file.name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ file.name }}</h5>
-                            <div class="file-info mb-2">
-                                <div><i class="bi bi-file-earmark"></i> Image</div>
-                                <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
-                                <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
-                            </div>
-                            <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-download"></i> Download
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            {% if videos %}
-            <h2 class="section-header">
-                <i class="bi bi-camera-video"></i> Videos
-            </h2>
-            <div class="row">
-                {% for file in videos %}
-                <div class="col-md-4 gallery-item">
-                    <div class="card">
+                    {% else %}
                         <video controls>
                             <source src="{{ file.path }}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ file.name }}</h5>
-                            <div class="file-info mb-2">
-                                <div><i class="bi bi-file-earmark"></i> Video</div>
-                                <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
-                                <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ file.name }}</h5>
+                        <div class="file-info mb-2">
+                            <div>
+                                <i class="bi {% if file.type == 'image' %}bi-image{% else %}bi-camera-video{% endif %}"></i>
+                                {{ file.type|title }}
                             </div>
-                            <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-download"></i> Download
-                            </a>
+                            <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
+                            <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
                         </div>
+                        <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-download"></i> Download
+                        </a>
                     </div>
                 </div>
-                {% endfor %}
             </div>
-            {% endif %}
-
-            {% if pagination.pages > 1 %}
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if pagination.has_prev %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('index', page=pagination.prev_num) }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for page_num in pagination.iter_pages() %}
-                        {% if page_num %}
-                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-                                <a class="page-link" href="{{ url_for('index', page=page_num) }}">{{ page_num }}</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">...</span>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if pagination.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('index', page=pagination.next_num) }}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
-        {% else %}
-        <div class="text-center">
-            <p class="lead">No media files found.</p>
-            <a href="{{ url_for('upload') }}" class="btn btn-primary">
-                <i class="bi bi-upload"></i> Upload your first media file
-            </a>
+            {% endfor %}
         </div>
+
+        {% if pagination.pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('index', page=pagination.prev_num) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('index', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('index', page=pagination.next_num) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
         {% endif %}
+    {% else %}
+    <div class="text-center">
+        <p class="lead">No media files found.</p>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('upload') }}" class="btn btn-primary">
+            <i class="bi bi-upload"></i> Upload your first media file
+        </a>
+        {% else %}
+        <p>Please <a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a> to upload media files.</p>
+        {% endif %}
+    </div>
     {% endif %}
 </div>
 {% endblock %} 
