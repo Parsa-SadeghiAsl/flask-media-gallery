@@ -49,7 +49,8 @@ def index():
     # Get paginated files
     pagination = query.order_by(Media.uploaded_at.desc()).paginate(page=page, per_page=per_page)
     files = [{
-        'name': media.filename,
+        'name': media.original_filename,
+        'title': media.title,
         'type': media.file_type,
         'path': url_for('serve_file', filename=media.filename),
         'download_path': url_for('download_file', filename=media.filename),
@@ -121,6 +122,7 @@ def upload():
             # Create media record
             file_type = 'video' if ext in {'mp4', 'webm', 'mov'} else 'image'
             media = Media(
+                title=form.title.data,
                 filename=filename,
                 original_filename=file.filename,
                 file_type=file_type,

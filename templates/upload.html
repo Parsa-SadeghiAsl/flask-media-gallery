@@ -10,6 +10,13 @@
                     <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control") }}
+                            {% for error in form.title.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
                             {{ form.file.label(class="form-label") }}
                             {{ form.file(class="form-control") }}
                             {% for error in form.file.errors %}

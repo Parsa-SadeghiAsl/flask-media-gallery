@@ -10,7 +10,7 @@
             <div class="col-md-4 gallery-item">
                 <div class="card">
                     {% if file.type == 'image' %}
-                        <img src="{{ file.path }}" alt="{{ file.name }}">
+                        <img src="{{ file.path }}" alt="{{ file.title }}">
                     {% else %}
                         <video controls>
                             <source src="{{ file.path }}" type="video/mp4">
@@ -18,7 +18,7 @@
                         </video>
                     {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ file.name }}</h5>
+                        <h5 class="card-title">{{ file.title }}</h5>
                         <div class="file-info mb-2">
                             <div>
                                 <i class="bi {% if file.type == 'image' %}bi-image{% else %}bi-camera-video{% endif %}"></i>
@@ -26,6 +26,7 @@
                             </div>
                             <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
                             <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
+                            <div class="text-muted small"><i class="bi bi-file-earmark"></i> {{ file.name }}</div>
                         </div>
                         <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
                             <i class="bi bi-download"></i> Download

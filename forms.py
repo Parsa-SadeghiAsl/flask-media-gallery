@@ -27,6 +27,10 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 class UploadForm(FlaskForm):
+    title = StringField('Title', validators=[
+        DataRequired(),
+        Length(min=3, max=100, message='Title must be between 3 and 100 characters')
+    ])
     file = FileField('File', validators=[
         FileRequired(),
         FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm', 'mov'], 'Images and videos only!')

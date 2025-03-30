@@ -24,6 +24,7 @@ class User(UserMixin, db.Model):
 
 class Media(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
     filename = db.Column(db.String(255), nullable=False)
     file_type = db.Column(db.String(10), nullable=False)  # 'image' or 'video'
     original_filename = db.Column(db.String(255), nullable=False)
@@ -31,4 +32,4 @@ class Media(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Media {self.original_filename}>' 
+        return f'<Media {self.title}>' 
