@@ -1,52 +1,77 @@
 # Flask Media Gallery
 
-A simple web gallery application that displays and allows downloading of media files from a local directory.
+A web application for sharing and managing media files with user authentication and admin controls.
 
 ## Features
 
-- View media files in a responsive grid layout
-- Download media files
+- User authentication system (register, login, logout)
+- Upload personal media files with custom titles
+- View all media in a responsive gallery layout
+- Download any media file
+- Dark/light theme toggle
+- Admin panel for user and media management
+- Responsive design for all devices
+- Pagination for both gallery and admin views
 - Support for common image formats (PNG, JPG, JPEG, GIF) and video formats (MP4, WEBM, MOV)
-- Modern and responsive UI
 
 ## Setup
 
-1. Create a virtual environment (recommended):
+### Prerequisites
+- Python 3.7+
+- pip
+
+### Installation
+
+1. Clone the repository or download the source code
+
+2. Create a virtual environment (recommended):
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-2. Install dependencies:
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create a `media` folder in the project root and add your media files:
-```bash
-mkdir media
-# Copy your media files into the media folder
+4. Create a `.env` file in the project root with the following configuration:
+```
+SECRET_KEY=your-secure-secret-key
+DATABASE_URL=sqlite:///media_gallery.db
+
+# Admin credentials (used when creating the initial admin account)
+ADMIN_USERNAME=youradmin
+ADMIN_PASSWORD=your-secure-password
+ADMIN_EMAIL=admin@yourdomain.com
 ```
 
-4. Run the application:
+5. Run the application:
 ```bash
 python app.py
 ```
 
-5. Open your web browser and navigate to `http://localhost:5000`
+6. Open your web browser and navigate to `http://localhost:5000`
 
-## Usage
+### First Login
 
-1. Place your media files in the `media` folder
-2. View your media files in the grid layout
-3. Download files by clicking the "Download" button on any media item
+On first startup, the application will automatically create an admin account using the credentials specified in your `.env` file. You can log in with these credentials and access the admin panel.
 
-## Directory Structure
+## Admin Panel
 
-- `media/` - Directory containing your media files
-- `templates/` - Contains the HTML templates
+The admin panel allows you to:
 
-## Supported File Types
+- View statistics about users and media
+- Manage users (create/delete users, toggle admin status)
+- Manage all media files (edit titles, delete files)
+- Change admin credentials
 
-- Images: PNG, JPG, JPEG, GIF
-- Videos: MP4, WEBM, MOV
+To access the admin panel, log in with admin credentials and click the "Admin" dropdown in the navigation bar.
+
+## User Management
+
+Regular users can:
+- Register for an account
+- Upload their own media files
+- View all media files in the gallery
+- Download any media file
