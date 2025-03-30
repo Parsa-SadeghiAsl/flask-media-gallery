@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Upload Media</h2>
+                    <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.file.label(class="form-label") }}
+                            {{ form.file(class="form-control") }}
+                            {% for error in form.file.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                            <div class="form-text">
+                                Supported formats: JPG, JPEG, PNG, GIF, MP4, WEBM, MOV
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

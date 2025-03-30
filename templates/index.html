@@ -1,22 +1,15 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Gallery</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% extends "base.html" %}
 
-</head>
-<body>
-    <button class="btn btn-outline-primary theme-toggle" id="themeToggle">
-        <i class="bi bi-moon-stars"></i>
-    </button>
-
-    <div class="container py-5">
-        <h1 class="text-center mb-5">Media Gallery</h1>
-        
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5">Media Gallery</h1>
+    
+    {% if show_auth_message %}
+    <div class="text-center">
+        <h2>Welcome to Media Gallery</h2>
+        <p class="lead">Please <a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a> to view and upload your media files.</p>
+    </div>
+    {% else %}
         {% if files %}
             {% set images = files|selectattr('type', 'equalto', 'image')|list %}
             {% set videos = files|selectattr('type', 'equalto', 'video')|list %}
@@ -32,8 +25,10 @@
                         <img src="{{ file.path }}" alt="{{ file.name }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ file.name }}</h5>
-                            <div class="file-info">
-                                <i class="bi bi-file-earmark"></i> Image
+                            <div class="file-info mb-2">
+                                <div><i class="bi bi-file-earmark"></i> Image</div>
+                                <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
+                                <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
                             </div>
                             <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
                                 <i class="bi bi-download"></i> Download
@@ -59,8 +54,10 @@
                         </video>
                         <div class="card-body">
                             <h5 class="card-title">{{ file.name }}</h5>
-                            <div class="file-info">
-                                <i class="bi bi-file-earmark"></i> Video
+                            <div class="file-info mb-2">
+                                <div><i class="bi bi-file-earmark"></i> Video</div>
+                                <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
+                                <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
                             </div>
                             <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
                                 <i class="bi bi-download"></i> Download
@@ -71,43 +68,48 @@
                 {% endfor %}
             </div>
             {% endif %}
+
+            {% if pagination.pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('index', page=pagination.prev_num) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('index', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('index', page=pagination.next_num) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
         {% else %}
         <div class="text-center">
-            <p class="lead">No media files found in the media folder.</p>
-            <p>Please add your media files to the <code>media</code> directory.</p>
+            <p class="lead">No media files found.</p>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Upload your first media file
+            </a>
         </div>
         {% endif %}
-
-        {% if total_pages > 1 %}
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                {% if current_page > 1 %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('index', page=current_page-1) }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-                
-                {% for page_num in range(1, total_pages + 1) %}
-                <li class="page-item {% if page_num == current_page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('index', page=page_num) }}">{{ page_num }}</a>
-                </li>
-                {% endfor %}
-                
-                {% if current_page < total_pages %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('index', page=current_page+1) }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html> 
+    {% endif %}
+</div>
+{% endblock %} 
