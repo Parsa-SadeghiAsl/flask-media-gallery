@@ -238,7 +238,7 @@ def admin_dashboard():
     image_count = Media.query.filter_by(file_type='image').count()
     video_count = Media.query.filter_by(file_type='video').count()
     
-    week_ago = datetime.utcnow() - timedelta(days=7)
+    week_ago = datetime.now() - timedelta(days=7)
     new_users_count = User.query.filter(User.created_at >= week_ago).count()
     
     return render_template('admin/dashboard.html',

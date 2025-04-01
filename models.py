@@ -10,7 +10,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now())
     is_admin = db.Column(db.Boolean, default=False)
     media_files = db.relationship('Media', backref='owner', lazy=True)
 
@@ -30,7 +30,7 @@ class Media(db.Model):
     thumbnail = db.Column(db.String(255), unique=True, nullable=True)
     original_filename = db.Column(db.String(255), nullable=False)
     file_type = db.Column(db.String(10), nullable=False)  # 'image' or 'video'
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_at = db.Column(db.DateTime, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
