@@ -7,34 +7,52 @@
     {% if files %}
         <div class="row">
             {% for file in files %}
-            <div class="col-md-4 gallery-item">
-                <div class="card">
-                    {% if file.type == 'image' %}
-                        <img src="{{ file.path }}" alt="{{ file.title }}">
-                    {% else %}
-                        <video controls>
-                            <source src="{{ file.path }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    {% endif %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 gallery-item" data-media-id="{{ file.id }}">
+                    <div class="card-img-top thumbnail-container">
+                        {% if file.type == 'image' %}
+                            <img src="{{ file.thumbnail }}" alt="{{ file.title }}" class="img-fluid thumbnail">
+                        {% else %}
+                            <div class="video-thumbnail">
+                                <img src="{{ file.thumbnail }}" alt="{{ file.title }}" class="img-fluid thumbnail">
+                                <div class="play-overlay">
+                                    <i class="bi bi-play-circle-fill"></i>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ file.title }}</h5>
-                        <div class="file-info mb-2">
-                            <div>
-                                <i class="bi {% if file.type == 'image' %}bi-image{% else %}bi-camera-video{% endif %}"></i>
-                                {{ file.type|title }}
-                            </div>
-                            <div><i class="bi bi-person"></i> Uploaded by: {{ file.uploader }}</div>
+                        <div class="file-info small text-muted">
+                            <div><i class="bi bi-person"></i> {{ file.uploader }}</div>
                             <div><i class="bi bi-calendar"></i> {{ file.upload_date }}</div>
-                            <div class="text-muted small"><i class="bi bi-file-earmark"></i> {{ file.name }}</div>
                         </div>
-                        <a href="{{ file.download_path }}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-download"></i> Download
-                        </a>
                     </div>
                 </div>
             </div>
             {% endfor %}
+        </div>
+
+        <!-- Media Modal -->
+        <div class="modal fade" id="mediaModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div id="mediaContainer"></div>
+                        <div class="mt-3" id="mediaInfo"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" id="downloadBtn">
+                            <i class="bi bi-download"></i> Download
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {% if pagination.pages > 1 %}
@@ -83,4 +101,92 @@
     </div>
     {% endif %}
 </div>
+
+{% block extra_css %}
+<style>
+.thumbnail-container {
+    position: relative;
+    padding-top: 75%; /* 4:3 aspect ratio */
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.video-thumbnail {
+    position: unset;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
+#mediaContainer img,
+#mediaContainer video {
+    max-width: 100%;
+    max-height: 70vh;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = new bootstrap.Modal(document.getElementById('mediaModal'));
+    
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.addEventListener('click', async function() {
+            const mediaId = this.dataset.mediaId;
+            const response = await fetch(`/api/media/${mediaId}`);
+            const media = await response.json();
+            
+            document.querySelector('.modal-title').textContent = media.title;
+            
+            const mediaContainer = document.getElementById('mediaContainer');
+            if (media.type === 'image') {
+                mediaContainer.innerHTML = `<img src="${media.url}" alt="${media.title}" class="img-fluid">`;
+            } else {
+                mediaContainer.innerHTML = `
+                    <video controls class="img-fluid">
+                        <source src="${media.url}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+            }
+            
+            document.getElementById('mediaInfo').innerHTML = `
+                <div class="text-muted">
+                    <p>Uploaded by ${media.uploader} on ${media.upload_date}</p>
+                    <p>Original filename: ${media.original_filename}</p>
+                </div>
+            `;
+            
+            document.getElementById('downloadBtn').href = media.download_url;
+            
+            modal.show();
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %} 

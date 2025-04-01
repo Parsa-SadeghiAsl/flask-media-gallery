@@ -26,9 +26,10 @@ class User(UserMixin, db.Model):
 class Media(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    filename = db.Column(db.String(255), nullable=False)
-    file_type = db.Column(db.String(10), nullable=False)  # 'image' or 'video'
+    filename = db.Column(db.String(255), unique=True, nullable=False)
+    thumbnail = db.Column(db.String(255), unique=True, nullable=True)
     original_filename = db.Column(db.String(255), nullable=False)
+    file_type = db.Column(db.String(10), nullable=False)  # 'image' or 'video'
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
