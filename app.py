@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_file, url_for, request, flash, redirect
+from flask import Flask, render_template, send_file, url_for, request, flash, redirect, jsonify
 from flask_caching import Cache
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
@@ -9,6 +9,8 @@ from models import db, User, Media
 from forms import LoginForm, RegistrationForm, UploadForm, MediaEditForm, ProfileEditForm
 from utils import admin_required
 import uuid
+from PIL import Image
+import subprocess
 
 load_dotenv()
 
@@ -53,6 +55,30 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mov'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def create_thumbnail(file_path, thumb_path, size=(300, 300)):
+    """Create a thumbnail for an image or video."""
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
+    if file_ext in ['.jpg', '.jpeg', '.png', '.gif']:
+        # Create image thumbnail
+        with Image.open(file_path) as img:
+            img.thumbnail(size)
+            img.save(thumb_path, "JPEG")
+    elif file_ext in ['.mp4', '.webm', '.mov']:
+        # Create video thumbnail using ffmpeg
+        try:
+            subprocess.run([
+                'ffmpeg', '-i', file_path,
+                '-ss', '00:00:01',  # Take frame from 1 second
+                '-frames:v', '1',
+                '-s', f'{size[0]}x{size[1]}',
+                thumb_path
+            ], check=True, capture_output=True)
+        except subprocess.CalledProcessError:
+            # If ffmpeg fails, create a default video thumbnail
+            with Image.new('RGB', size, color='black') as img:
+                img.save(thumb_path, "JPEG")
+
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
@@ -64,10 +90,12 @@ def index():
     # Get paginated files
     pagination = query.order_by(Media.uploaded_at.desc()).paginate(page=page, per_page=per_page)
     files = [{
+        'id': media.id,
         'name': media.original_filename,
         'title': media.title,
         'type': media.file_type,
         'path': url_for('serve_file', filename=media.filename),
+        'thumbnail': url_for('serve_thumbnail', filename=media.thumbnail),
         'download_path': url_for('download_file', filename=media.filename),
         'uploader': media.owner.username,
         'upload_date': media.uploaded_at.strftime('%Y-%m-%d %H:%M')
@@ -130,15 +158,26 @@ def upload():
             # Generate a unique filename
             ext = file.filename.rsplit('.', 1)[1].lower()
             filename = f"{uuid.uuid4()}.{ext}"
+            thumb_filename = f"{uuid.uuid4()}_thumb.jpg"
             
-            # Save the file
-            file.save(os.path.join(app.config['DATA_FOLDER'], filename))
+            file_path = os.path.join(app.config['DATA_FOLDER'], filename)
+            thumb_path = os.path.join(app.config['DATA_FOLDER'], 'thumbnails', thumb_filename)
+            
+            # Create thumbnails directory if it doesn't exist
+            os.makedirs(os.path.join(app.config['DATA_FOLDER'], 'thumbnails'), exist_ok=True)
+            
+            # Save the original file
+            file.save(file_path)
+            
+            # Create thumbnail
+            create_thumbnail(file_path, thumb_path)
             
             # Create media record
             file_type = 'video' if ext in {'mp4', 'webm', 'mov'} else 'image'
             media = Media(
                 title=form.title.data,
                 filename=filename,
+                thumbnail=thumb_filename,
                 original_filename=file.filename,
                 file_type=file_type,
                 user_id=current_user.id
@@ -168,6 +207,25 @@ def serve_file(filename):
     # Anyone can view files now
     media = Media.query.filter_by(filename=filename).first_or_404()
     return send_file(os.path.join(app.config['DATA_FOLDER'], filename))
+
+@app.route('/data/thumbnails/<filename>')
+def serve_thumbnail(filename):
+    return send_file(os.path.join(app.config['DATA_FOLDER'], 'thumbnails', filename))
+
+@app.route('/api/media/<int:media_id>')
+def get_media_details(media_id):
+    media = Media.query.get_or_404(media_id)
+    return jsonify({
+        'id': media.id,
+        'title': media.title,
+        'type': media.file_type,
+        'url': url_for('serve_file', filename=media.filename),
+        'thumbnail': url_for('serve_thumbnail', filename=media.thumbnail),
+        'download_url': url_for('download_file', filename=media.filename),
+        'uploader': media.owner.username,
+        'upload_date': media.uploaded_at.strftime('%Y-%m-%d %H:%M'),
+        'original_filename': media.original_filename
+    })
 
 # Admin routes
 @app.route('/admin')
